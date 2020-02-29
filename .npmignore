@@ -22,10 +22,10 @@ yarn-debug.log*
 yarn-error.log*
 
 # Development folders and files
-public
 src
-scripts
-config
-.travis.yml
+public
+tsconfig.json
+jestconfig.json
+webpack.config.js
 CHANGELOG.md
 README.md
