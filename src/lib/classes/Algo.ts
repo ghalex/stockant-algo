@@ -44,7 +44,7 @@ class Algo {
     return order.id
   }
 
-  run(data: Data, strategy: Strategy): Portfolio {
+  public run(data: Data, strategy: Strategy): Portfolio {
     const res: DictPrice = this.scheduler.run({
       data,
       period: strategy.period,
@@ -72,7 +72,7 @@ class Algo {
    * Calculate portfolio
    * @param prices
    */
-  portfolio(getPrice: (tick: string) => Price[]): Portfolio {
+  private portfolio(getPrice: (tick: string) => Price[]): Portfolio {
     const ordersGroup = z.groupBy((x: Order) => x.tick, this.orders)
     const shares = mapValues(keyBy(z.gbSum('shares', ordersGroup), 'group'), 'sum')
     const invested = mapValues(keyBy(z.gbSum('amount', ordersGroup), 'group'), 'sum')

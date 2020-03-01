@@ -13,14 +13,14 @@ const init = async () => {
       order('AAPL', 100)
       order('MSFT', 100)
 
-      console.log(getPortfolio().totalProfit)
+      console.log(date)
     }
   }
 
-  await data.fetch(['MSFT', 'AAPL'], '2020-01-01')
+  await data.fetch(['MSFT', 'AAPL'], '2019-01-01')
 
   const portfolio = algo.run(data, strategy)
-  console.log(portfolio)
+  console.log('portfolio', portfolio)
 }
 
 document.body.onload = async () => {
