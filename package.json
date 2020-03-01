@@ -1,15 +1,14 @@
 {
   "name": "stockant-algo",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib/**/*",
-    "lib-esm/**/*"
+    "lib/**/*"
   ],
   "scripts": {
-    "build": "tsc -m es6 --outDir lib-esm",
+    "build": "tsc && tsc -m es6 --outDir lib/esm && tsc -m umd --outDir lib/umd",
     "start": "webpack-dev-server --hot",
     "test": "jest --config jestconfig.json",
     "prepare": "npm run build",
