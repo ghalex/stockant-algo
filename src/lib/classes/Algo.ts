@@ -5,7 +5,7 @@ import { mapValues, keyBy, last, reduce } from 'lodash'
 import { DictPrice, Price, Portfolio, Strategy, Order } from '../types'
 
 class Algo {
-  version = '1.0.0'
+  version = '1.0.7'
   scheduler = new Scheduler()
 
   private _orders: Order[] = []
@@ -54,7 +54,7 @@ class Algo {
         const order = this.orderAmount(date, getPrice)
 
         if (idx >= rolling) {
-          const getPortfolio = () => this.portfolio(getPrice)
+          const getPortfolio = () => this.portfolio(tick => getPrice(tick)[0])
           strategy.rebalance(date, getPrice, order, getPortfolio)
           if (strategy.log) {
             strategy.log(date, getPrice)
@@ -64,7 +64,7 @@ class Algo {
     })
 
     return this.portfolio((tick: string) => {
-      return res[tick].reverse()
+      return data.byDay[tick].reverse()[0]
     })
   }
 
@@ -72,12 +72,12 @@ class Algo {
    * Calculate portfolio
    * @param prices
    */
-  private portfolio(getPrice: (tick: string) => Price[]): Portfolio {
+  private portfolio(getLastPrice: (tick: string) => Price): Portfolio {
     const ordersGroup = z.groupBy((x: Order) => x.tick, this.orders)
     const shares = mapValues(keyBy(z.gbSum('shares', ordersGroup), 'group'), 'sum')
     const invested = mapValues(keyBy(z.gbSum('amount', ordersGroup), 'group'), 'sum')
     const avgPrice = mapValues(invested, (v, k) => v / shares[k])
-    const value = mapValues(shares, (v, k) => v * getPrice(k)[0].close)
+    const value = mapValues(shares, (v, k) => v * getLastPrice(k).close)
     const profit = mapValues(value, (v, k) => (v - invested[k]) / invested[k])
     const totalValue = reduce(value, (total, v, k) => total + v, 0)
     const totalInvested = reduce(invested, (total, v, k) => total + v, 0)

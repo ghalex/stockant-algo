@@ -9,15 +9,14 @@ const init = async () => {
     period: 'everyMonth',
     rolling: 0,
     rebalance: (date, getPrice, order, getPortfolio) => {
-      // console.log(moment(date).format('DD/MMM/YYYY'), getPrice('AAPL'))
       order('AAPL', 100)
       order('MSFT', 100)
 
-      console.log(date)
+      console.log(moment(date).format('DD/MMM/YYYY'), getPortfolio())
     }
   }
 
-  await data.fetch(['MSFT', 'AAPL'], '2019-01-01')
+  await data.fetch(['MSFT', 'AAPL'], '2020-01-01')
 
   const portfolio = algo.run(data, strategy)
   console.log('portfolio', portfolio)
