@@ -8,6 +8,12 @@ class Data {
   apiUrl = 'https://financialmodelingprep.com/api/v3/historical-price-full/'
   raw: DictPrice = {}
 
+  constructor(raw?: DictPrice) {
+    if (raw) {
+      this.raw = raw
+    }
+  }
+
   async fetch(ticks: string[], date: string = '2020-01-01'): Promise<DictPrice> {
     const result: { [key: string]: Array<any> } = {}
 

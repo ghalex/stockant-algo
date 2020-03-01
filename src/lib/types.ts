@@ -1,4 +1,5 @@
 import Data from './classes/Data'
+import Portfolio from './classes/Portfolio'
 
 export interface Price {
   date: string
@@ -36,33 +37,35 @@ export interface Rebalance {
     date: Date,
     getPrice: (tick: string) => Price[],
     order: (tick: string, amount: number) => number,
-    getPortfolio: () => Portfolio
+    portfolio: Portfolio
   ): void
 }
 
-export interface Order {
+export interface Trade {
   id: number
   shares: number
   tick: string
   price: number
   amount: number
   date: Date
+  label: string
 }
-export interface Portfolio {
-  orders: Order[]
-  shares: { [key: string]: number }
-  avgPrice: { [key: string]: number }
-  invested: { [key: string]: number }
-  value: { [key: string]: number }
-  profit: { [key: string]: number }
-  totalInvested: number
-  totalValue: number
-  totalProfit: number
-}
+
+// export interface Portfolio {
+//   orders: Order[]
+//   shares: { [key: string]: number }
+//   avgPrice: { [key: string]: number }
+//   invested: { [key: string]: number }
+//   value: { [key: string]: number }
+//   profit: { [key: string]: number }
+//   totalInvested: number
+//   totalValue: number
+//   totalProfit: number
+// }
 
 export interface Strategy {
   period: Period
   rolling?: number
   rebalance: Rebalance
-  log?: (date: Date, getPrice: (tick: string) => Price[]) => void
+  log?: (date: Date, getPrice: (tick: string) => Price[], portfolio: Portfolio) => void
 }

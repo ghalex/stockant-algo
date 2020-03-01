@@ -1,14 +1,13 @@
-import * as z from 'zebras'
 import Scheduler from './Scheduler'
+import Portfolio from './Portfolio'
 import Data from './Data'
-import { mapValues, keyBy, last, reduce } from 'lodash'
-import { DictPrice, Price, Portfolio, Strategy, Order } from '../types'
+import * as moment from 'moment'
+import { DictPrice, Price, Strategy, Trade } from '../types'
 
 class Algo {
   version = '1.0.7'
   scheduler = new Scheduler()
-
-  private _orders: Order[] = []
+  portfolio = new Portfolio()
 
   /**
    * Get prices for tick
@@ -31,20 +30,22 @@ class Algo {
     amount: number
   ) => {
     const price = getPrice(tick)[0].close
-    const order: Order = {
-      id: this._orders.length + 1,
+    const trade: Trade = {
+      id: this.portfolio.trades.length + 1,
       shares: amount / price,
       tick,
       price,
       amount,
-      date: date
+      date,
+      label: moment(date).format('DD/MM/YYYY')
     }
 
-    this._orders.push(order)
-    return order.id
+    this.portfolio.addTrade(trade)
+    return trade.id
   }
 
   public run(data: Data, strategy: Strategy): Portfolio {
+    this.portfolio = new Portfolio()
     const res: DictPrice = this.scheduler.run({
       data,
       period: strategy.period,
@@ -54,50 +55,15 @@ class Algo {
         const order = this.orderAmount(date, getPrice)
 
         if (idx >= rolling) {
-          const getPortfolio = () => this.portfolio(tick => getPrice(tick)[0])
-          strategy.rebalance(date, getPrice, order, getPortfolio)
+          strategy.rebalance(date, getPrice, order, this.portfolio)
           if (strategy.log) {
-            strategy.log(date, getPrice)
+            strategy.log(date, getPrice, this.portfolio)
           }
         }
       }
     })
 
-    return this.portfolio((tick: string) => {
-      return data.byDay[tick].reverse()[0]
-    })
-  }
-
-  /**
-   * Calculate portfolio
-   * @param prices
-   */
-  private portfolio(getLastPrice: (tick: string) => Price): Portfolio {
-    const ordersGroup = z.groupBy((x: Order) => x.tick, this.orders)
-    const shares = mapValues(keyBy(z.gbSum('shares', ordersGroup), 'group'), 'sum')
-    const invested = mapValues(keyBy(z.gbSum('amount', ordersGroup), 'group'), 'sum')
-    const avgPrice = mapValues(invested, (v, k) => v / shares[k])
-    const value = mapValues(shares, (v, k) => v * getLastPrice(k).close)
-    const profit = mapValues(value, (v, k) => (v - invested[k]) / invested[k])
-    const totalValue = reduce(value, (total, v, k) => total + v, 0)
-    const totalInvested = reduce(invested, (total, v, k) => total + v, 0)
-    const portfolio: Portfolio = {
-      orders: ordersGroup,
-      shares,
-      avgPrice,
-      invested,
-      value,
-      profit,
-      totalInvested,
-      totalValue,
-      totalProfit: (totalValue - totalInvested) / totalInvested
-    }
-
-    return portfolio
-  }
-
-  get orders(): Order[] {
-    return this._orders
+    return this.portfolio
   }
 }
 
