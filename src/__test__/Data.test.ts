@@ -1,4 +1,4 @@
-import Data from '../classes/Data'
+import Data from '../lib/classes/Data'
 import axios from 'axios'
 import { keys } from 'lodash'
 

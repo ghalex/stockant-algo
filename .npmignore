@@ -22,8 +22,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # Development folders and files
-src
-public
+/src
+/public
 tsconfig.json
 jestconfig.json
 webpack.config.js
