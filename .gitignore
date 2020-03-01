@@ -4,6 +4,7 @@
 node_modules
 /lib
 /lib-esm
+/bundles
 
 # testing
 /coverage
