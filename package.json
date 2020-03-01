@@ -1,15 +1,13 @@
 {
   "name": "stockant-algo",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "files": [
-    "lib/**/*"
-  ],
   "scripts": {
-    "build": "tsc && tsc -m es6 --outDir lib/esm && tsc -m umd --outDir lib/umd",
-    "start": "webpack-dev-server --hot",
+    "build": "npm run clean && tsc && tsc -m es6 --outDir lib-esm && webpack --config configs/webpack.config.js --mode production",
+    "start": "webpack-dev-server --hot --config configs/webpack.config.demo.js",
+    "clean": "shx rm -rf bundles lib lib-esm",
     "test": "jest --config jestconfig.json",
     "prepare": "npm run build",
     "version": "npm run format && git add -A src",
@@ -39,9 +37,11 @@
     "eslint-plugin-standard": "^4.0.1",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^25.1.0",
+    "shx": "^0.3.2",
     "ts-jest": "^25.2.1",
     "ts-loader": "^6.2.1",
     "typescript": "^3.8.3",
+    "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.41.6",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
