@@ -1,2 +1,4 @@
-import Algo from './Algo'
-export default new Algo()
+import Algo from './classes/Algo'
+import Data from './classes/Data'
+
+export { Algo, Data }

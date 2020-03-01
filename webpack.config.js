@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   entry: './src/demo/index.ts',
+  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -20,6 +21,9 @@ module.exports = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/'
+  },
+  node: {
+    fs: 'empty'
   },
   devServer: {
     port: 3000,

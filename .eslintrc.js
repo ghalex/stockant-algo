@@ -7,8 +7,7 @@ module.exports = {
   extends: ['standard'],
   globals: {
     Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly',
-    J
+    SharedArrayBuffer: 'readonly'
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -17,6 +16,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint'],
   rules: {
-    'space-before-function-paren': 'off'
+    'space-before-function-paren': 'off',
+    'no-unused-vars': 'off'
   }
 }
