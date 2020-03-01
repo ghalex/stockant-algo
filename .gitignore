@@ -3,6 +3,7 @@
 # dependencies
 node_modules
 /lib
+/lib-esm
 
 # testing
 /coverage
