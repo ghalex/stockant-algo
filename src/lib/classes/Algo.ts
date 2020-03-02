@@ -5,7 +5,7 @@ import * as moment from 'moment'
 import { DictPrice, Price, Strategy, Trade } from '../types'
 
 class Algo {
-  version = '1.0.7'
+  version = '1.0.10'
   scheduler = new Scheduler()
   portfolio = new Portfolio()
 
