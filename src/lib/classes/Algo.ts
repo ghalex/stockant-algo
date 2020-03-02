@@ -31,7 +31,7 @@ class Algo {
   ) => {
     const price = getPrice(tick)[0].close
     const trade: Trade = {
-      id: this.portfolio.totalTrades + 1,
+      id: this.portfolio.nbOfTrades + 1,
       shares: amount / price,
       tick,
       price,
@@ -64,7 +64,7 @@ class Algo {
           }
         }
 
-        if (idx + 1 === len) {
+        if (idx + 1 === len && strategy.period !== 'everyDay') {
           const lastDate = new Date(allData.first.reverse()[0].date)
           const lastPrice = (t: string): Price[] => allData.byDay[t].reverse()
 

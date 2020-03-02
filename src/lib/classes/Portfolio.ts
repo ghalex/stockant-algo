@@ -11,7 +11,7 @@ class Portfolio {
     this._trades.push(trade)
   }
 
-  get totalTrades() {
+  get nbOfTrades() {
     return this._trades.length
   }
 
@@ -28,9 +28,9 @@ class Portfolio {
       z.addCol('totalValue', [totalValue]),
       z.addCol('trades', [this._trades.length]),
       z.addCol('profit', [totalValue - totalInvested]),
-      z.addCol('profitPct', [((totalValue - totalInvested) / totalInvested) * 100]),
-      z.addCol('maxDrawdown', [maxDrawdown * 100]),
-      z.addCol('maxProfit', [maxProfit * 100])
+      z.addCol('profitPct', [(totalValue - totalInvested) / totalInvested]),
+      z.addCol('maxDrawdown', [maxDrawdown]),
+      z.addCol('maxProfit', [maxProfit])
     ])([{ totalInvested: totalInvested }])
 
     return df
@@ -111,6 +111,7 @@ class Portfolio {
       mapCol('avgPrice', toFixed),
       mapCol('change', toFixed),
       mapCol('changePct', toFixed),
+      mapCol('invested', toFixed),
       mapCol('value', toFixed)
     ])(this.statsPerTick)
 
@@ -145,13 +146,13 @@ class Portfolio {
       (arr: any) =>
         z.addCol(
           'change',
-          z.deriveCol((t: any) => t.price - t.avgPrice, arr),
+          z.deriveCol((t: any) => t.value - t.invested, arr),
           arr
         ),
       (arr: any) =>
         z.addCol(
           'changePct',
-          z.deriveCol((t: any) => t.change / t.avgPrice, arr),
+          z.deriveCol((t: any) => t.change / t.invested, arr),
           arr
         )
     ])(map(ticks, v => ({ tick: v })))
