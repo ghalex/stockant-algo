@@ -16,11 +16,13 @@ const init = async () => {
     }
   }
 
-  await data.fetch(['MSFT', 'AAPL'], '2019-08-01')
+  await data.fetch(['MSFT', 'AAPL'], '2019-11-01')
 
   const portfolio = algo.run(data, strategy)
-  portfolio.calculate()
-  console.log(portfolio.printTrades())
+
+  console.log('Stats total:\r', portfolio.print().total)
+  console.log('Stats per tick:\r', portfolio.print().perTick)
+  console.log('Stats per period:\r', portfolio.print().perPeriod)
 }
 
 document.body.onload = async () => {

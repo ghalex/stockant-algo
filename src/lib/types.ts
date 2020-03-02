@@ -22,7 +22,7 @@ export interface DictPriceMonth {
 export type Period = 'everyDay' | 'everyMonth'
 
 export interface RunCallback {
-  (idx: number, date: Date, data: DictPrice): void
+  (idx: number, date: Date, data: DictPrice, len: number): void
 }
 
 export interface RunOptions {
