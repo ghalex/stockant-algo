@@ -6,9 +6,14 @@ import * as moment from 'moment'
 class Portfolio {
   private _trades: Trade[] = []
   private _statsPerTick = []
+  private _lastPrice: { [key: string]: Price } = {}
 
   public addTrade(trade: Trade) {
     this._trades.push(trade)
+  }
+
+  public setLastPrice(lastPrice: { [key: string]: Price }) {
+    this._lastPrice = lastPrice
   }
 
   get nbOfTrades() {
@@ -19,8 +24,9 @@ class Portfolio {
     const byTick = z.groupBy((s: any) => s.tick, this.statsPerTick)
     const ticks = keys(byTick)
     const last = z.tail(ticks.length, this.statsPerTick)
+    const lastValue = z.deriveCol((r: any) => r.shares * this._lastPrice[r.tick].close, last)
     const totalInvested = z.sum(z.getCol('invested', last))
-    const totalValue = z.sum(z.getCol('value', last))
+    const totalValue = z.sum(lastValue)
     const maxDrawdown = z.min(z.getCol('changePct', this.statsPerPeriod))
     const maxProfit = z.max(z.getCol('changePct', this.statsPerPeriod))
 

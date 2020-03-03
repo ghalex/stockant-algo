@@ -2,6 +2,7 @@ import Scheduler from './Scheduler'
 import Portfolio from './Portfolio'
 import Data from './Data'
 import * as moment from 'moment'
+import { keys } from 'lodash'
 import { DictPrice, Price, Strategy, Trade } from '../types'
 
 class Algo {
@@ -63,17 +64,16 @@ class Algo {
             strategy.log(date, getPrice, this.portfolio)
           }
         }
-
-        if (idx + 1 === len && strategy.period !== 'everyDay') {
-          const lastDate = new Date(allData.first.reverse()[0].date)
-          const lastPrice = (t: string): Price[] => allData.byDay[t].reverse()
-
-          this.portfolio.update(lastDate, lastPrice)
-        }
       }
     })
 
-    // this.portfolio.update(date, getPrice)
+    const lastPrice: any = {}
+    for (const tick of keys(allData.byDay)) {
+      lastPrice[tick] = allData.byDay[tick].reverse()[0]
+    }
+
+    this.portfolio.setLastPrice(lastPrice)
+
     return this.portfolio
   }
 }
