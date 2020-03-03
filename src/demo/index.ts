@@ -6,39 +6,35 @@ const init = async () => {
   const algo = new Algo()
   const data = new Data()
 
+  const sac: any = {
+    VOO: 0.2, // Vanguard S&P 500
+    // "QQQ": 0.20,  // NDX
+    VNQ: 0.1, // Vanguard Real Estate
+    LQD: 0.2, // iShare Corp Bonds
+    ISTB: 0.3, // iShare 1-5 Year Bounds
+    IMTB: 0.2 // iShare 5-10 Year Bounds
+  }
+
   const strategy: Strategy = {
     period: 'everyMonth',
     rolling: 0,
-    rebalance: (date, getPrice, order) => {
-      order('AAPL', 100)
-      order('MSFT', 100)
+    rebalance: (date, getPrice, order, portfolio) => {
+      const total = 500
 
-      // console.log(moment(date).format('DD/MMM/YYYY'), getPortfolio())
+      for (const tick in sac) {
+        order(tick, total * sac[tick])
+      }
     }
   }
 
-  const strategy2: Strategy = {
-    period: 'everyMonth',
-    rolling: 0,
-    rebalance: (date, getPrice, order) => {
-      order('AAPL', 100)
-      order('MSFT', 100)
-      // console.log(moment(date).format('DD/MMM/YYYY'), getPortfolio())
-    }
-  }
+  await data.fetch(Object.keys(sac), '2019-01-01')
 
-  await data.fetch(['MSFT', 'AAPL'], '2020-01-01')
+  console.log(data.byMonth)
+  const portfolio = algo.run(data, strategy)
 
-  // const portfolio = algo.run(data, strategy)
-  const portfolio2 = algo.run(data, strategy2)
-
-  // console.log('Stats total:\r', portfolio.print().total)
-  // console.log('Stats per tick:\r', portfolio.print().perTick)
-  // console.log('Stats per period:\r', portfolio.print().perPeriod)
-
-  console.log('Stats total:\r', portfolio2.print().total)
-  console.log('Stats per tick:\r', portfolio2.print().perTick)
-  console.log('Stats per period:\r', portfolio2.print().perPeriod)
+  console.log('Stats total:\r', portfolio.print().total)
+  console.log('Stats per tick:\r', portfolio.print().perTick)
+  console.log('Stats per period:\r', portfolio.print().perPeriod)
 }
 
 document.body.onload = async () => {

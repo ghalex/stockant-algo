@@ -67,7 +67,7 @@ class Portfolio {
           z.deriveCol((t: any) => t.change / t.invested, arr),
           arr
         )
-    ])(map(dates, v => ({ dated: v })))
+    ])(map(dates, v => ({ date: new Date(v) })))
 
     return df
   }
@@ -100,6 +100,7 @@ class Portfolio {
     const mapCol = curry(this.mapCol)
 
     const df = z.pipe([
+      mapCol('date', v => moment(v).format('DD/MMM/YYYY')),
       mapCol('value', toFixed),
       mapCol('change', toFixed),
       mapCol('changePct', toFixed)
@@ -113,6 +114,7 @@ class Portfolio {
     const mapCol = curry(this.mapCol)
 
     const df = z.pipe([
+      mapCol('date', v => moment(v).format('DD/MMM/YYYY')),
       mapCol('price', toFixed),
       mapCol('avgPrice', toFixed),
       mapCol('change', toFixed),
@@ -128,7 +130,7 @@ class Portfolio {
     const trades = z.groupBy((t: Trade) => t.tick, this._trades)
     const ticks = keys(trades)
     const prices = map(ticks, t => getPrice(t)[0].close)
-    const dates = map(ticks, _ => moment(date).format('DD/MMM/YYYY'))
+    const dates = map(ticks, _ => date)
     const invested = z.getCol('sum', z.gbSum('amount', trades))
     const shares = z.getCol('sum', z.gbSum('shares', trades))
 
