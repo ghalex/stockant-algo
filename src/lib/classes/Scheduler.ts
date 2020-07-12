@@ -9,7 +9,7 @@ class Scheduler {
 
     for (let i = 0; i < len; i++) {
       const date = new Date(first[i].date)
-      callback(i, date, data)
+      callback(i, date, data, len)
     }
   }
 

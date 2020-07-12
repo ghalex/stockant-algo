@@ -1,7 +1,7 @@
 import * as z from 'zebras'
 import * as moment from 'moment'
 import axios from 'axios'
-import { mapValues, pick } from 'lodash'
+import { mapValues, pick, keys } from 'lodash'
 import { DictPrice, DictPriceMonth, Price } from '../types'
 
 class Data {
@@ -42,6 +42,14 @@ class Data {
     return mapValues(this.raw, (arr) =>
       z.groupBy((x: Price) => moment(x.date).format('MMM/YYYY'), arr)
     )
+  }
+
+  get ticks(): string[] {
+    return keys(this.raw)
+  }
+
+  get first(): Price[] {
+    return this.raw[this.ticks[0]]
   }
 }
 

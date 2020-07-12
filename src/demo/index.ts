@@ -4,23 +4,37 @@ import { Strategy } from '../lib/types'
 
 const init = async () => {
   const algo = new Algo()
-  const data = new Data('0ed66e52f829c1c8913cb84978451fab')
+  const data = new Data('key_here')
+
+  const sac: any = {
+    VOO: 0.2, // Vanguard S&P 500
+    // "QQQ": 0.20,  // NDX
+    VNQ: 0.1, // Vanguard Real Estate
+    LQD: 0.2, // iShare Corp Bonds
+    ISTB: 0.3, // iShare 1-5 Year Bounds
+    IMTB: 0.2 // iShare 5-10 Year Bounds
+  }
+
   const strategy: Strategy = {
     period: 'everyMonth',
     rolling: 0,
-    rebalance: (date, getPrice, order) => {
-      order('AAPL', 100)
-      order('MSFT', 100)
+    rebalance: (date, getPrice, order, portfolio) => {
+      const total = 500
 
-      // console.log(moment(date).format('DD/MMM/YYYY'), getPortfolio())
+      for (const tick in sac) {
+        order(tick, total * sac[tick])
+      }
     }
   }
 
-  await data.fetch(['MSFT', 'AAPL'], '2019-08-01')
+  await data.fetch(Object.keys(sac), '2019-01-01')
 
+  console.log(data.byMonth)
   const portfolio = algo.run(data, strategy)
-  portfolio.calculate()
-  console.log(portfolio.printTrades())
+
+  console.log('Stats total:\r', portfolio.print().total)
+  console.log('Stats per tick:\r', portfolio.print().perTick)
+  console.log('Stats per period:\r', portfolio.print().perPeriod)
 }
 
 document.body.onload = async () => {
