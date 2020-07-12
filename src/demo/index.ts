@@ -1,10 +1,10 @@
 import { Algo, Data } from '../lib'
 import { Strategy } from '../lib/types'
-import * as moment from 'moment'
+// import * as moment from 'moment'
 
 const init = async () => {
   const algo = new Algo()
-  const data = new Data()
+  const data = new Data('0ed66e52f829c1c8913cb84978451fab')
   const strategy: Strategy = {
     period: 'everyMonth',
     rolling: 0,

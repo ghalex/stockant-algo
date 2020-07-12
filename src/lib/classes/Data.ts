@@ -5,10 +5,14 @@ import { mapValues, pick } from 'lodash'
 import { DictPrice, DictPriceMonth, Price } from '../types'
 
 class Data {
-  apiUrl = 'https://financialmodelingprep.com/api/v3/historical-price-full/'
+  apiUrl = 'https://fmpcloud.io/api/v3'
+  apiKey = ''
+
   raw: DictPrice = {}
 
-  constructor(raw?: DictPrice) {
+  constructor(apiKey: string, raw?: DictPrice) {
+    this.apiKey = apiKey
+
     if (raw) {
       this.raw = raw
     }
@@ -18,11 +22,15 @@ class Data {
     const result: { [key: string]: Array<any> } = {}
 
     for (const tick of ticks) {
-      const data = (await axios.get(this.apiUrl + tick + '?from=' + date)).data
+      const url =
+        this.apiUrl + '/historical-price-full/' + tick + `?apikey=${this.apiKey}&from=` + date
+      const data = (await axios.get(url)).data
       result[tick] = data.historical
     }
 
-    this.raw = mapValues(result, v => v.map(p => pick(p, ['date', 'open', 'high', 'low', 'close'])))
+    this.raw = mapValues(result, (v) =>
+      v.map((p) => pick(p, ['date', 'open', 'high', 'low', 'close']))
+    )
     return this.raw
   }
 
@@ -31,7 +39,7 @@ class Data {
   }
 
   get byMonth(): DictPriceMonth {
-    return mapValues(this.raw, arr =>
+    return mapValues(this.raw, (arr) =>
       z.groupBy((x: Price) => moment(x.date).format('MMM/YYYY'), arr)
     )
   }
