@@ -1,13 +1,25 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "lib": ["dom", "es2015"],
-    "declaration": true,
-    "outDir": "./lib",
+    "target": "esnext",
+    "module": "esnext",
     "strict": true,
-    "moduleResolution": "node"
+    "declaration": true,
+    "declarationDir": "dist",
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "baseUrl": "./",
+    "types": ["node"],
+    "paths": {
+      "@/*": ["src/lib/*"]
+    },
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
-  "include": ["src/lib"],
-  "exclude": ["node_modules", "bundles", "**/__tests__/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "bundles", "**/__tests__/*", "dist"]
 }

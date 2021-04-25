@@ -1,42 +1,60 @@
-import { Algo, Data } from '../lib'
-import { Strategy } from '../lib/types'
-// import * as moment from 'moment'
+// import { Algo, Data } from '../lib'
+// import { Strategy } from '../lib/types'
+import * as papa from 'papaparse'
+import * as r from 'ramda'
+import { Backtest } from '../lib'
+import { Price, StrategyConfig } from '../lib/types'
 
 const init = async () => {
-  const algo = new Algo()
-  const data = new Data('key_here')
+  const data = await readCSV('/data/aapl.csv')
 
-  const sac: any = {
-    VOO: 0.2, // Vanguard S&P 500
-    // "QQQ": 0.20,  // NDX
-    VNQ: 0.1, // Vanguard Real Estate
-    LQD: 0.2, // iShare Corp Bonds
-    ISTB: 0.3, // iShare 1-5 Year Bounds
-    IMTB: 0.2 // iShare 5-10 Year Bounds
-  }
-
-  const strategy: Strategy = {
-    period: 'everyMonth',
-    rolling: 0,
-    rebalance: (date, getPrice, order, portfolio) => {
-      const total = 500
-
-      for (const tick in sac) {
-        order(tick, total * sac[tick])
+  const backtest = new Backtest()
+  const strategy: StrategyConfig = {
+    name: 'Time Flow',
+    timeWindow: [],
+    pyramiding: 0,
+    run: function ({ strategy, close }) {
+      if (close.current > 134) {
+        strategy.order('id_long', true, 10)
       }
     }
   }
 
-  await data.fetch(Object.keys(sac), '2019-01-01')
-
-  console.log(data.byMonth)
-  const portfolio = algo.run(data, strategy)
-
-  console.log('Stats total:\r', portfolio.print().total)
-  console.log('Stats per tick:\r', portfolio.print().perTick)
-  console.log('Stats per period:\r', portfolio.print().perPeriod)
+  backtest.run(strategy, r.takeLast(10, data))
 }
 
 document.body.onload = async () => {
   init()
+}
+
+async function readCSV(url: string): Promise<Price[]> {
+  return new Promise((resolve, reject) => {
+    papa.parse(url, {
+      download: true,
+      complete: ({ data, errors }) => {
+        if (errors.length === 0) {
+          const head: string[] = data.shift() as string[]
+          const toObject = r.pipe(
+            r.zipObj(head),
+            r.pick(['date', 'high', 'low', 'open', 'close']),
+            r.mapObjIndexed((val, key) => {
+              if (key === 'date') {
+                return new Date(val)
+              }
+              return parseFloat(val)
+            })
+          )
+
+          const result = r.pipe(
+            r.map((vals: any[]) => toObject(vals)),
+            r.sortBy(r.prop('date'))
+          )(data as any[]) as any[]
+
+          resolve(result)
+        } else {
+          reject(errors)
+        }
+      }
+    })
+  })
 }

@@ -1,4 +1,1 @@
-import Algo from './classes/Algo'
-import Data from './classes/Data'
-
-export { Algo, Data }
+export * from './core'

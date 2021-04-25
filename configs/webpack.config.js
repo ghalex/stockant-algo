@@ -28,10 +28,10 @@ var config = {
     ]
   },
   resolve: {
-    extensions: ['.ts', '.js']
-  },
-  node: {
-    fs: 'empty'
+    extensions: ['.ts', '.js'],
+    alias: {
+      '@': path.resolve(__dirname, 'src/lib')
+    }
   }
 }
 
