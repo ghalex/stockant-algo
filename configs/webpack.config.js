@@ -1,5 +1,6 @@
 var path = require('path')
 // var UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
 var PATHS = {
   entryPoint: path.resolve(__dirname, '../src/lib/index.ts'),
@@ -29,9 +30,7 @@ var config = {
   },
   resolve: {
     extensions: ['.ts', '.js'],
-    alias: {
-      '@': path.resolve(__dirname, 'src/lib')
-    }
+    plugins: [new TsconfigPathsPlugin()]
   }
 }
 

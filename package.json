@@ -4,8 +4,8 @@
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "browser": "dist/lib.esm.js",
-  "module": "dist/lib.esm.js",
+  "browser": "lib-esm/index.js",
+  "module": "lib-esm/index.js",
   "scripts": {
     "build": "npm run clean && tsc && tsc -m es6 --outDir lib-esm && webpack --config configs/webpack.config.js --mode production",
     "start": "webpack serve --hot --config configs/webpack.config.demo.js",

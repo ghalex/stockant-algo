@@ -4,7 +4,7 @@
     "module": "esnext",
     "strict": true,
     "declaration": true,
-    "declarationDir": "dist",
+    // "declarationDir": "dist",
     "noUnusedLocals": false,
     "noUnusedParameters": true,
     "importHelpers": true,
@@ -13,13 +13,14 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
+    "outDir": "./lib",
     "baseUrl": "./",
     "types": ["node"],
     "paths": {
       "@/*": ["src/lib/*"]
     },
-    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+    "lib": ["esnext", "dom", "dom.iterable"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/lib/**/*"],
   "exclude": ["node_modules", "bundles", "**/__tests__/*", "dist"]
 }

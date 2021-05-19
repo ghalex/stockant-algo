@@ -1,27 +1,28 @@
-import { StrategyConfig, Order } from '@/types'
+import * as r from 'ramda'
+import { Order, Bar, RunContext, Trade, OrderInput } from '@/types'
+import Activity from './Activity'
 
 class Strategy {
-  private $config: StrategyConfig
-  private $orders: Order[]
+  private $activity: Activity
 
-  constructor(config: StrategyConfig) {
-    this.$config = config
-    this.$orders = [] as Order[]
+  constructor(activity: Activity) {
+    this.$activity = activity
   }
 
-  public order(id: string, long: boolean, qty: number, limit?: number) {
-    const order: Order = {
-      id,
-      long,
-      qty,
-      limit
-    }
-
-    this.$orders.push(order)
+  public get positionSize(): number {
+    return this.$activity.positionSize
   }
 
-  get orders() {
-    return this.$orders.concat()
+  public order(data: OrderInput) {
+    this.$activity.addOrder({ long: true, ...data }, 'open')
+  }
+
+  public close(data: OrderInput) {
+    this.$activity.addOrder({ ...data }, 'close')
+  }
+
+  public closeAll() {
+    console.log('not implemented')
   }
 }
 

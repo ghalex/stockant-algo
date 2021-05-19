@@ -1,45 +1,72 @@
 import { take } from 'ramda'
-import { Order, Price, StrategyConfig } from '@/types'
+import { Order, Bar, BacktestConfig, RunContext } from '@/types'
 import { getCol } from '@/utils'
 import { createSeries } from '@/utils/series'
+
 import Strategy from './Strategy'
+import Activity from './Activity'
+import BarState from './BarState'
+import Cache from './Cache'
 
 class Backtest {
-  public run(cfg: StrategyConfig, data: Price[]) {
-    const strategy = new Strategy(cfg)
+  private $barState: BarState
+  private $strategy: Strategy
+  private $activity: Activity
+  private $data: Bar[] = []
+  private $cfg: BacktestConfig
+  private $cache: Cache
 
-    for (let i = 0; i < data.length; i++) {
-      const currentBar = data[i]
-      const open = createSeries(take(i, getCol('open', data)).reverse())
-      const close = createSeries(take(i, getCol('close', data)).reverse())
-      const high = createSeries(take(i, getCol('high', data)).reverse())
-      const low = createSeries(take(i, getCol('low', data)).reverse())
+  constructor(cfg: BacktestConfig, data: Bar[]) {
+    this.$barState = new BarState(data.length)
+    this.$activity = new Activity(this.$barState)
+    this.$strategy = new Strategy(this.$activity)
+    this.$cache = new Cache(this.$barState, data)
+    this.$data = data
+    this.$cfg = cfg
+  }
 
-      const $ctx = {
-        open,
-        close,
-        high,
-        low,
-        strategy
-      }
+  public nextBar() {
+    const i = this.$barState.next(this.$data)
 
-      this.fillOrders(strategy.orders, open.current, currentBar.date)
+    this.$activity.fillOrders()
 
-      cfg.run($ctx)
+    const ctx: RunContext = {
+      ...this.$cache.barSeries,
+      cache: this.$cache,
+      currentBar: {
+        ...this.$barState.data,
+        index: this.$barState.index,
+        isLast: i === this.$data.length - 1
+      },
+      strategy: this.$strategy
+    }
 
-      if (cfg.procssOnClose) {
-        // fill orders with close price
-      }
+    this.$cfg.run(ctx)
+
+    if (this.$barState.isLast) {
+      console.log(this.$activity.trades)
+    }
+
+    this.print()
+    this.$activity.print()
+  }
+
+  public init() {
+    this.$cfg.beforeRun({ cache: this.$cache })
+  }
+
+  public run() {
+    while (this.$barState.isLast === false) {
+      this.nextBar()
     }
   }
 
-  private fillOrders(orders: Order[], price: number, date: Date) {
-    for (const order of orders) {
-      if (order.limit) {
-        console.log('Limit orders not implemented')
-      } else {
-      }
-    }
+  public print() {
+    console.table({
+      title: 'Processing bar: ' + this.$barState.index,
+      index: this.$barState.index,
+      ...this.$barState.data
+    })
   }
 }
 
